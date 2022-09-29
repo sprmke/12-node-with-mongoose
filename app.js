@@ -2,13 +2,12 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = requrie('mongoose');
 
 const dotenv = require('dotenv');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
-
-const { mongoConnect } = require('./util/database');
 
 dotenv.config();
 
@@ -40,6 +39,9 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  app.listen(3000);
-});
+mongoose
+  .connect(process.env.MONGODB_CONNECTION_STRING)
+  .then((result) => {
+    app.listen(300);
+  })
+  .catch((error) => console.log(error));
