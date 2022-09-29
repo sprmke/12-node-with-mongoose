@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -90,6 +91,13 @@ exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findByIdAndDelete(prodId)
     .then((result) => {
+      return User.updateMany(
+        {},
+        { $pull: { 'cart.items': { productId: prodId } } }
+      );
+    })
+    .then((result) => {
+      console.log('result::', result);
       res.redirect('/admin/products');
     })
     .catch((err) => console.log(err));
