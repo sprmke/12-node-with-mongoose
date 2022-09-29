@@ -1,4 +1,4 @@
-# Learn Node: Working with NoSQL & Using MongoDB
+# Learn Node: Working with Mongoose
 
 ##### Course:
 
