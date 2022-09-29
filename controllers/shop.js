@@ -84,13 +84,16 @@ exports.postOrder = (req, res, next) => {
   req.user
     .populate('cart.items.productId')
     .then((user) => {
+      // build the products data to be saved on order collection
       const products = user.cart.items.map((product) => {
         return {
           quantity: product.quantity,
+          // use ._doc to get the document object and not the Product model
           productData: { ...product.productId._doc },
         };
       });
 
+      // add new order
       const order = new Order({
         user: {
           name: req.user.name,
@@ -100,6 +103,10 @@ exports.postOrder = (req, res, next) => {
       });
 
       return order.save();
+    })
+    .then((result) => {
+      // reset the cart data from the user
+      return req.user.clearCart();
     })
     .then((result) => {
       res.redirect('/orders');
