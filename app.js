@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   // Save this user on request to be used across the app
-  User.findById('632bef750415689a6e4bbf06')
+  User.findById('63356f01efbebf8041014a90')
     .then((user) => {
       req.user = user;
       next();
@@ -52,8 +52,8 @@ mongoose
           },
         });
         user.save();
-        app.listen(3000);
       }
     });
+    app.listen(3000);
   })
   .catch((error) => console.log(error));
