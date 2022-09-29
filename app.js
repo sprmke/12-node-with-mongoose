@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 const errorController = require('./controllers/error');
-// const User = require('./models/user');
+const User = require('./models/user');
 
 dotenv.config();
 
@@ -22,17 +22,15 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-//   // Temporary do this:
-//   // to save this userId on products collection
-//   User.findById('632bef750415689a6e4bbf06')
-//     .then((user) => {
-//       const { name, email, cart, _id } = user;
-//       req.user = new User(name, email, cart, _id);
-//       next();
-//     })
-//     .catch((err) => console.log(err));
-// });
+app.use((req, res, next) => {
+  // Save this user on request to be used across the app
+  User.findById('632bef750415689a6e4bbf06')
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -42,6 +40,20 @@ app.use(errorController.get404);
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING)
   .then((result) => {
-    app.listen(3000);
+    // get the first user
+    User.findOne().then((user) => {
+      // if we don't have any user, create one
+      if (!user) {
+        const user = new User({
+          name: 'Mike',
+          email: 'mike@test.com',
+          cart: {
+            items: [],
+          },
+        });
+        user.save();
+        app.listen(3000);
+      }
+    });
   })
   .catch((error) => console.log(error));
