@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Order = require('../models/order');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -86,7 +87,7 @@ exports.postOrder = (req, res, next) => {
       const products = user.cart.items.map((product) => {
         return {
           quantity: product.quantity,
-          productData: product.productId,
+          productData: { ...product.productId._doc },
         };
       });
 
